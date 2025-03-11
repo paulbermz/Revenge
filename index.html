@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Object Literal Array in Table</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      input,
+      button {
+        display: block;
+        margin: 5px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 5px;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      button {
+        padding: 3px 6px;
+        cursor: pointer;
+        border: none;
+        font-size: 12px;
+      }
+      .delete-btn {
+        background-color: red;
+        color: white;
+      }
+      .edit-btn {
+        background-color: blue;
+        color: white;
+      }
+      .save-btn {
+        background-color: green;
+        color: white;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <label>Name:</label>
+    <input type="text" id="txtName" placeholder="Enter your name" />
+
+    <label>Age:</label>
+    <input type="number" id="txtAge" placeholder="Enter your age" />
+
+    <label>Email:</label>
+    <input type="email" id="txtEmail" placeholder="Enter your email" />
+
+    <button onclick="addUser()">Submit</button>
+
+    <table>
+      <!-- <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Age Category</th>
+          <th>Email</th>
+          <th>Action</th>
+        </tr>
+      </thead> -->
+      <tbody id="tblUsers">
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+    <script src="User.js"></script>
+    <script>
+      // Array to store user objects
+      let users = [];
+      let txtName = document.getElementById("txtName");
+      let txtAge = document.getElementById("txtAge");
+      let txtEmail = document.getElementById("txtEmail");
+      let pOutput = document.getElementById("pOutput");
+      let tblUsers = document.getElementById("tblUsers");
+
+      function addUser() {
+        if (
+          !txtName.value ||
+          isNaN(parseInt(txtAge.value)) ||
+          !txtEmail.value
+        ) {
+          alert("Please enter all details correctly.");
+          return;
+        }
+
+        let user = new User(txtName.value, txtAge.value, txtEmail.value);
+
+        // Adding newly created object to the users array
+        users.push(user);
+
+        // Update the table display
+        displayUsers();
+
+        // Clear input fields
+        txtName.value = "";
+        txtAge.value = "";
+        txtEmail.value = "";
+
+        console.log(users);
+      }
+
+      function displayUsers() {
+        tblUsers.innerHTML = ""; // Clear existing table data
+
+        users.forEach((user, index) => {
+          let rowHTML = `<tr id="row-${index}">
+                                <td>
+                                    <span id="name-${index}">${user.getName()}</span>
+                                    <input type="text" id="edit-name-${index}" value="${user.getName()}" style="display:none;">
+                                </td>
+
+                                <td>
+                                    <span id="age-${index}">${user.getAge()}</span>
+                                    <input type="number" id="edit-age-${index}" value="${user.getAge()}" style="display:none;">
+                                </td>
+
+                                <td id="age-category-${index}">${user.getAgeCategory()}</td>
+
+                                <td>
+                                    <span id="email-${index}">${user.getEmail()}</span>
+                                    <input type="email" id="edit-email-${index}" value="${user.getEmail()}" style="display:none;">
+                                </td>
+                                
+                                <td>
+                                    <button class="edit-btn" onclick="editUser(${index})" id="edit-btn-${index}">Edit</button>
+                                    <button class="save-btn" onclick="saveUser(${index})" id="save-btn-${index}" style="display:none;">Save</button>
+                                    <button class="delete-btn" onclick="deleteUser(${index})">Delete</button>
+                                </td>
+                            </tr>`;
+          tblUsers.innerHTML += rowHTML;
+        });
+      }
+
+      function editUser(index) {
+        document.getElementById(`name-${index}`).style.display = "none";
+        document.getElementById(`edit-name-${index}`).style.display = "inline";
+        document.getElementById(`age-${index}`).style.display = "none";
+        document.getElementById(`edit-age-${index}`).style.display = "inline";
+        document.getElementById(`email-${index}`).style.display = "none";
+        document.getElementById(`edit-email-${index}`).style.display = "inline";
+
+        document.getElementById(`edit-btn-${index}`).style.display = "none";
+        document.getElementById(`save-btn-${index}`).style.display = "inline";
+      }
+
+      function saveUser(index) {
+        let newName = document.getElementById(`edit-name-${index}`).value;
+        let newAge = parseInt(
+          document.getElementById(`edit-age-${index}`).value
+        );
+        let newEmail = document.getElementById(`edit-email-${index}`).value;
+
+        if (!newName || isNaN(newAge) || !newEmail) {
+          alert("Please enter all details correctly.");
+          return;
+        }
+
+        users[index].setName(newName);
+        users[index].setAge(newAge);
+        users[index].setEmail(newEmail);
+        console.log(users);
+
+        displayUsers();
+      }
+
+      function deleteUser(index) {
+        // Remove the selected user from the array
+        users.splice(index, 1);
+        // Update the table display
+        displayUsers();
+
+        console.log(users);
+      }
+    </script>
+  </body>
+</html>
