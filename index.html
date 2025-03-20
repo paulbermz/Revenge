@@ -191,10 +191,10 @@
 
     
 <!--     <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
   <style>
@@ -204,6 +204,17 @@
 
     #taskList {
       font-size: 20px;
+    }
+
+    .delete {
+      border: 1px solid black;
+      background-color: rgb(200, 11, 11);
+      color: white;
+      border-radius: 5px;
+      font-size: 15px;
+      margin-left: 20px;
+      padding: 3px;
+      cursor: pointer;
     }
 
     .button {
@@ -221,15 +232,13 @@
     }
   </style>
   <body>
-    <input type="text" id="txtInput" />
-    <button id="btnAdd">ADD</button> <br />
-    <br />
+    <input type="text" id="txtInput" placeholder="Enter text" />
+    <button id="btnAdd">ADD</button> <br /><br />
     <ul id="taskList"></ul>
-    <br />
     <script>
       let txtInput = document.getElementById("txtInput");
       let btnAdd = document.getElementById("btnAdd");
-      let taskList = document.getElementById("taskList");
+      let taskText = document.getElementById("taskList");
       let id = 0;
 
       btnAdd.addEventListener("click", function () {
@@ -238,12 +247,16 @@
         li.setAttribute("id", "task-" + id);
 
         if (taskText == "") {
-          alert("Please enter a task");
+          alert("Please enter task.");
           return;
         }
 
         let span = document.createElement("span");
         span.textContent = taskText;
+
+        let btnDelete = document.createElement("btnDelete");
+        btnDelete.textContent = "DELETE";
+        btnDelete.classList.add("delete");
 
         let button = document.createElement("button");
         button.textContent = "MARK AS DONE";
@@ -251,20 +264,35 @@
         button.classList.add("mark-done");
 
         li.appendChild(span);
+        li.appendChild(btnDelete);
         li.appendChild(button);
         taskList.appendChild(li);
         id++;
+
+        btnDelete.addEventListener("click", function () {
+          let isConfirm = confirm("Are you sure you want to delete this task?");
+
+          if (isConfirm == true) {
+            span.remove();
+            btnDelete.remove();
+            button.remove();
+            li.remove();
+          } else {
+            alert("Deletion cancel.");
+            return;
+          }
+        });
 
         button.addEventListener("click", function () {
           button.classList.add("button");
           span.classList.add("done");
         });
-
         txtInput.value = "";
       });
     </script>
   </body>
-</html> -->
+</html>
+ -->
 
   </body>
 </html>
