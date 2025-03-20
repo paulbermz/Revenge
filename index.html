@@ -188,5 +188,83 @@
         console.log(users);
       }
     </script>
+
+    
+<!--     <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Document</title>
+  </head>
+  <style>
+    .done {
+      color: red;
+    }
+
+    #taskList {
+      font-size: 20px;
+    }
+
+    .button {
+      background-color: red;
+      color: white;
+    }
+
+    .mark-done {
+      border: 1px solid black;
+      border-radius: 5px;
+      padding: 5px 10px;
+      margin-left: 20px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+  </style>
+  <body>
+    <input type="text" id="txtInput" />
+    <button id="btnAdd">ADD</button> <br />
+    <br />
+    <ul id="taskList"></ul>
+    <br />
+    <script>
+      let txtInput = document.getElementById("txtInput");
+      let btnAdd = document.getElementById("btnAdd");
+      let taskList = document.getElementById("taskList");
+      let id = 0;
+
+      btnAdd.addEventListener("click", function () {
+        let taskText = txtInput.value;
+        let li = document.createElement("li");
+        li.setAttribute("id", "task-" + id);
+
+        if (taskText == "") {
+          alert("Please enter a task");
+          return;
+        }
+
+        let span = document.createElement("span");
+        span.textContent = taskText;
+
+        let button = document.createElement("button");
+        button.textContent = "MARK AS DONE";
+        button.setAttribute("id", "btn-" + id);
+        button.classList.add("mark-done");
+
+        li.appendChild(span);
+        li.appendChild(button);
+        taskList.appendChild(li);
+        id++;
+
+        button.addEventListener("click", function () {
+          button.classList.add("button");
+          span.classList.add("done");
+        });
+
+        txtInput.value = "";
+      });
+    </script>
+  </body>
+</html> -->
+
   </body>
 </html>
