@@ -1,161 +1,271 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="https://www.apachefriends.org/images/xampp-logo-ac950edf.svg"
+    />
     <title>Document</title>
   </head>
   <body>
-    <label for="txtName">Enter your name:</label>
-    <input type="text" id="txtName" placeholder="Enter your name" />
-    <label for="txtNights">Enter number of nights:</label>
-    <input
-      type="number"
-      id="txtNights"
-      placeholder="Enter number of nights"
-    <label for="selRoom">Select Room:</label>
-    <select id="selRoom">
-      <option value="" disabled selected>Select room</option>
-      <option value="Standard">Standard Room</option>
-      <option value="Deluxe">Deluxe Room</option>
-      <option value="Conference">Conference Room</option>
-    </select>
-    <button id="btnSubmit">SUBMIT</button><br /> <br>
-
-    <table border="1px">
-      <thead>
-        <tr>
-          <th>NAME OF CUSTOMER</th>
-          <th>ROOM TYPE</th>
-          <th>NUMBER OF NIGHTS</th>
-          <th>ACTIONS</th>
-        </tr>
-      </thead>
-      <tbody id="tblDisplay"></tbody>
-    </table>
-
-    <script>
-      class Booking {
-        constructor(name, roomType, nights) {
-          this.name = name;
-          this.roomType = roomType;
-          this.nights = nights;
+    <!-- <?php
+    session_start();
+    
+    $name = $address = $email = $section = $contact = "";
+    $nameErr = $addressErr = $emailErr = $sectionErr = $contactErr = "";
+    
+    if (!isset($_SESSION["records"])) {
+        $_SESSION["records"] = []; 
+    }
+    
+    if (isset($_POST["delete_id"])) {
+      $deleteId = $_POST["delete_id"];
+      foreach ($_SESSION["records"] as $index => $record) {
+          if ($record["id"] == $deleteId) {
+              unset($_SESSION["records"][$index]);
+              $_SESSION["records"] = array_values($_SESSION["records"]);
+              break;
+          }
+      }
+    }
+    
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $valid = true;
+    
+        if (empty($_POST["name"])) {
+            $nameErr = "Name is required";
+            $valid = false;
+        } else {
+            $name = $_POST["name"];
         }
-      }
-
-      let bookings = [];
-      let txtName = document.getElementById("txtName");
-      let txtNights = document.getElementById("txtNights");
-      let selRoom = document.getElementById("selRoom");
-      let tblDisplay = document.getElementById("tblDisplay");
-      let btnSubmit = document.getElementById("btnSubmit");
-
-      btnSubmit.addEventListener("click", () => {
-        let name = txtName.value;
-        let nights = parseInt(txtNights.value);
-        let roomType = selRoom.value;
-
-        if (!name || isNaN(nights) || nights <= 0 || !roomType) {
-          alert("Please enter valid inputs.");
-          return;
+    
+        if (empty($_POST["address"])) {
+            $addressErr = "Address is required";
+            $valid = false;
+        } else {
+            $address = $_POST["address"];
         }
-
-        let newBooking = new Booking(name, roomType, nights);
-        bookings.push(newBooking);
-        updateTable();
-
-        txtName.value = "";
-        txtNights.value = "";
-        selRoom.value = "";
-      });
-
-      function updateTable() {
-        while (tblDisplay.firstChild) {
-          tblDisplay.removeChild(tblDisplay.firstChild);
+    
+        if (empty($_POST["email"])) {
+            $emailErr = "Email is required";
+            $valid = false;
+        } else {
+            $email = $_POST["email"];
         }
-        bookings.forEach((booking, index) => createTableRow(booking, index));
-      }
-
-      function createTableRow(booking, index) {
-        let row = document.createElement("tr");
-
-        let nameCell = document.createElement("td");
-        nameCell.textContent = booking.name;
-
-        let roomCell = document.createElement("td");
-        roomCell.textContent = booking.roomType;
-
-        let nightsCell = document.createElement("td");
-        nightsCell.textContent = booking.nights;
-
-        let actionsCell = document.createElement("td");
-        let editButton = document.createElement("button");
-        editButton.textContent = "Edit";
-        let saveButton = document.createElement("button");
-        saveButton.textContent = "Save";
-        saveButton.style.display = "none";
-        let deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-
-        editButton.addEventListener("click", () =>
-          editBooking(row, booking, saveButton, editButton)
-        );
-        saveButton.addEventListener("click", () =>
-          saveBooking(row, booking, saveButton, editButton)
-        );
-        deleteButton.addEventListener("click", () => deleteBooking(index));
-
-        actionsCell.append(editButton, saveButton, deleteButton);
-        row.append(nameCell, roomCell, nightsCell, actionsCell);
-        tblDisplay.appendChild(row);
-      }
-
-      function editBooking(row, booking, saveButton, editButton) {
-        const nameInput = document.createElement("input");
-        nameInput.value = booking.name;
-
-        let roomSelect = document.createElement("select");
-        ["Standard", "Deluxe", "Conference"].forEach((type) => {
-          let option = document.createElement("option");
-          option.value = type;
-          option.textContent = type;
-          if (type === booking.roomType) option.selected = true;
-          roomSelect.appendChild(option);
-        });
-
-        let nightsInput = document.createElement("input");
-        nightsInput.type = "number";
-        nightsInput.value = booking.nights;
-
-        row.children[0].replaceChildren(nameInput);
-        row.children[1].replaceChildren(roomSelect);
-        row.children[2].replaceChildren(nightsInput);
-
-        saveButton.style.display = "inline";
-        editButton.style.display = "none";
-      }
-
-      function saveBooking(row, booking, saveButton, editButton) {
-        let nameInput = row.children[0].querySelector("input").value;
-        let roomSelect = row.children[1].querySelector("select").value;
-        let nightsInput = row.children[2].querySelector("input").value;
-
-        if (!nameInput || !roomSelect || !nightsInput || isNaN(nightsInput)) {
-          alert("Please enter valid values!");
-          return;
+    
+        if (empty($_POST["section"])) {
+            $sectionErr = "Section is required";
+            $valid = false;
+        } else {
+            $section = $_POST["section"];
         }
+    
+        if (empty($_POST["contact"])) {
+            $contactErr = "Contact is required";
+            $valid = false;
+        } else {
+            $contact = $_POST["contact"];
+        }
+    
+        if ($valid) {
+            $newRecord = [
+                "id" => count($_SESSION["records"]) + 1,
+                "name" => $name,
+                "address" => $address,
+                "email" => $email,
+                "section" => $section,
+                "contact" => $contact  
+            ];
+            $_SESSION["records"][] = $newRecord;
+    
+            $name = $address = $email = $section = $contact = "";
+        }
+    }
+    ?>
+    
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <style>
+        .error {
+          color: red;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          max-width: 900px;
+          margin: 20px 0;
+        }
+        table, th, td {
+          border: 1px solid #ccc;
+        }
+        th, td {
+          padding: 8px 12px;
+          text-align: left;
+        }
+        th {
+          background-color: #f4f4f4;
+        }
+      </style>
+    </head>
+    <body>
+      <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+        <label for="name">Enter your name:</label> <br>
+        <input type="text" name="name" placeholder="Enter your name" value="<?php echo htmlspecialchars($name); ?>"> <br>
+        <span class="error"><?php echo $nameErr; ?></span> <br>
+    
+        <label for="address">Enter your address:</label> <br>
+        <input type="text" name="address" placeholder="Enter your address" value="<?php echo htmlspecialchars($address); ?>"> <br>
+        <span class="error"><?php echo $addressErr; ?></span> <br>
+    
+        <label for="email">Enter your email:</label> <br>
+        <input type="text" name="email" placeholder="Enter your email" value="<?php echo htmlspecialchars($email); ?>"> <br>
+        <span class="error"><?php echo $emailErr; ?></span> <br>
+    
+        <label for="section">Enter your section:</label> <br>
+        <input type="text" name="section" placeholder="Enter your section" value="<?php echo htmlspecialchars($section); ?>"> <br>
+        <span class="error"><?php echo $sectionErr; ?></span> <br>
+    
+        <label for="contact">Enter your contact:</label> <br>
+        <input type="text" name="contact" placeholder="Enter your contact number" value="<?php echo htmlspecialchars($contact); ?>"> <br>
+        <span class="error"><?php echo $contactErr; ?></span> <br>
+    
+        <button type="submit" id="submit">Submit</button>
+        <hr>
+      </form>
+    
+    <?php
+    if (!empty($_SESSION["records"])) {
+        echo "<table>";
+        echo "<tr><th>ID</th><th>Name</th><th>Address</th><th>Email</th><th>Section</th><th>Contact</th><th>Action</th></tr>";
+    
+        foreach ($_SESSION["records"] as $record) {
+            echo "<tr>";
+            echo "<td>" . htmlspecialchars($record["id"]) . "</td>";
+            echo "<td>" . htmlspecialchars($record["name"]) . "</td>";
+            echo "<td>" . htmlspecialchars($record["address"]) . "</td>";
+            echo "<td>" . htmlspecialchars($record["email"]) . "</td>";
+            echo "<td>" . htmlspecialchars($record["section"]) . "</td>";
+            echo "<td>" . htmlspecialchars($record["contact"]) . "</td>";
+            echo '<td>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="delete_id" value="' . $record["id"] . '">
+                        <button type="submit" onclick="return confirm(\'Are you sure you want to delete this record?\');">Delete</button>
+                    </form>
+                  </td>';
+            echo "</tr>";
+        }
+    
+        echo "</table>";
+    }
+    ?>
+     <?php
+    $color = "red";
+    $x = 10;
+    $y = 20;
 
-        booking.name = nameInput;
-        booking.roomType = roomSelect;
-        booking.nights = parseInt(nightsInput);
+    echo "This fruit is " . $color . "<br>"; 
+    echo "This car is " . $color . "<br>"; 
+    echo "This motor is " . $color . "<br>"; 
+    echo "Answer: " . $x * $y . "<br>";
 
-        updateTable();
-      }
+    $x = 5985;
+    var_dump(is_numeric($x));
 
-      function deleteBooking(index) {
-        bookings.splice(index, 1);
-        updateTable();
-      }
-    </script>
+    $x = "59.85" + 100;
+    var_dump(is_numeric($x));
+
+    $t = 14;
+
+    if($t < 20) {
+        echo "Have a good day!";
+    }
+
+    $favcolor = "blue";
+
+    switch($favcolor) {
+        case "red":
+            echo "Your favorite color is red!";
+            break;
+        case "blue":
+            echo "Your favorite color is blue!" . "<br>";
+            break;
+        case "green":
+            echo "Your favorite color is green!";
+            break;
+        default:
+            echo "Your favorite color is neither red, blue, nor green!";
+    }
+
+    $i = 0;
+    while($i < 5) {
+        echo "while loop iteration: $i\n" . "<br>";
+        $i++;
+    }
+
+    $j = 0;
+    do {
+        echo "do while loop iteration: $j\n" . "<br>";
+        $j++;
+    } while($j <5);
+    
+    for($k = 0; $k > 5; $k++) {
+        echo "for loop iteration: $k\n" . "<br>";
+    }
+
+    $fruits = ["apple", "banana", "cherry"];
+    foreach ($fruits as $fruit) {
+        echo "foreach loop value: $fruit\n" . "<br>";
+    }
+
+    function myMessage() {
+        echo "Hello World!" . "<br>";
+    }
+
+    myMessage();
+
+    function familyName($fname) {
+        echo "$fname Refsnes.<br>";
+    }
+
+    familyName("Rene");
+    familyName("Ronnel");
+    familyName("Thanos");
+    familyName("Panot");
+    familyName("Kolas");
+
+    define("cars", ["BMW", "McLarren", "Lamborghini"]);
+    echo "Car brand: " . cars[0] . "<br>";
+    echo "Car brand: " . cars[1] . "<br>";
+    echo "Car brand: " . cars[2] . "<br>";
+
+    $members = array("Peter"=>"35", "Ben"=>"37", "Joe"=>"43" );
+
+    foreach($members as $x => $y) {
+        echo "$x : $y <br>";
+    }
+
+     ?>
+
+     <?php 
+     echo "<hr>";
+     echo "<table border=1px>";
+     echo "<th>Name</th><th>Name</th><th>Name</th><th>Name</th>";
+     echo "<tr>";
+     echo "<td>Paul</td>";
+     echo "<td>Paul</td>";
+     echo "<td>Paul</td>";
+     echo "<td>Paul</td>";
+     echo "</tr>";
+     echo "</table>";
+     echo "</hr>";
+     ?>
+    </body>
+    </html>          -->
   </body>
 </html>
