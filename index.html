@@ -12,545 +12,197 @@
   <body>
 
     
-    <!-- <?php  
-          <?php
-session_start();
+<!--     <?php 
+	session_start();
 
-if (!isset($_SESSION["records"])) {
-    $_SESSION["records"] = [];
-}
+	class Person {
+		private $name;
+		private $age;
 
-if (isset($_POST["delete_id"])) {
-    $deleteId = $_POST["delete_id"];
-    foreach ($_SESSION["records"] as $index => $record) {
-        if ($record["id"] == $deleteId) {
-            unset($_SESSION["records"][$index]);
-            $_SESSION["records"] = array_values($_SESSION["records"]);
-            break;
-        }
-    }
-}
+		public function __construct($name, $age) {
+			$this->name = $name;
+			$this->age = $age;
+		}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-    $address = $_POST["address"];
-    $email = $_POST["email"];
-    $section = $_POST["section"];
-    $contact = $_POST["contact"];
+		public function getName() {
+			return $this->name;
+		}
 
-    $newRecord = [
-        "id" => count($_SESSION["records"]) + 1,
-        "name" => $name,
-        "address" => $address,
-        "email" => $email,
-        "section" => $section,
-        "contact" => $contact
-    ];
-    $_SESSION["records"][] = $newRecord;
-}
+		public function setName($name) {
+			$this->name = $name;
+		}
+
+		public function getAge() {
+			return $this->age;
+		}
+
+		public function setAge($age) {
+			$this->age = $age;
+		}
+
+		public function displayInfo() {
+			return $this->getName() . ", Age: " . $this->getAge() . "<br>";
+		}
+	} 
+
+	if (!isset($_SESSION['people'])) {
+		$_SESSION['people'] = [];
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] == "POST") {
+		if(isset($_POST['action']) && $_POST['action'] == 'add') {
+			$name = $_POST['name'];
+			$age = $_POST['age'];
+
+			if (!empty($name) && !empty($age) && $age > 0) {
+				$newPerson = new Person($name, $age);
+				$_SESSION['people'][] = $newPerson;
+			}
+
+			header("Location: testing.php");
+			exit();
+		}
+	}
+
+	if (isset($_GET['action'])) {
+		$action = $_GET['action'];
+
+		if ($action == 'edit' && isset($_GET['index']) && isset($_GET['name']) && isset($_GET['age'])) {
+			$index = $_GET['index'];
+			$name = $_GET['name'];
+			$age = $_GET['age'];		
+
+		if (isset($_SESSION['people'][$index])) {
+			$_SESSION['people'][$index]->setName($name);
+			$_SESSION['people'][$index]->setAge($age);
+			$_SESSION['update_success'] = "Record updated successfully!";
+		}
+
+		header("Location: testing.php");
+		exit();
+	}
+
+	if ($action == 'delete' && isset($_GET['index'])) {
+		$index = $_GET['index'];
+
+		if (isset($_SESSION['people'][$index])) {
+			array_splice($_SESSION['people'], $index, 1);
+		}
+	}
+
+		if ($action == 'clear') {
+			unset($_SESSION['people']);
+			header("Location: testing.php");
+			exit();
+		}
+	}
 ?>
+
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 900px;
-      margin: 20px 0;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 8px 12px;
-      text-align: left;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-  </style>
-</head>
-<body>
-  <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-    <label for="name">Enter your name:</label> <br>
-    <input type="text" name="name" placeholder="Enter your name" required> <br><br>
-
-    <label for="address">Enter your address:</label> <br>
-    <input type="text" name="address" placeholder="Enter your address" required> <br><br>
-
-    <label for="email">Enter your email:</label> <br>
-    <input type="email" name="email" placeholder="Enter your email" required> <br><br>
-
-    <label for="section">Enter your section:</label> <br>
-    <input type="text" name="section" placeholder="Enter your section" required> <br><br>
-
-    <label for="contact">Enter your contact:</label> <br>
-    <input type="tel" name="contact" placeholder="Enter your contact number" required> <br><br>
-
-    <button type="submit">Submit</button>
-    <hr>
-  </form>
-
-<?php
-if (!empty($_SESSION["records"])) {
-    echo "<table>";
-    echo "<tr><th>ID</th><th>Name</th><th>Address</th><th>Email</th><th>Section</th><th>Contact</th><th>Action</th></tr>";
-
-    foreach ($_SESSION["records"] as $record) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($record["id"]) . "</td>";
-        echo "<td>" . htmlspecialchars($record["name"]) . "</td>";
-        echo "<td>" . htmlspecialchars($record["address"]) . "</td>";
-        echo "<td>" . htmlspecialchars($record["email"]) . "</td>";
-        echo "<td>" . htmlspecialchars($record["section"]) . "</td>";
-        echo "<td>" . htmlspecialchars($record["contact"]) . "</td>";
-        echo '<td>
-                <form method="POST" style="display:inline;">
-                    <input type="hidden" name="delete_id" value="' . $record["id"] . '">
-                    <button type="submit" onclick="return confirm(\'Are you sure you want to delete this record?\');">Delete</button>
-                </form>
-              </td>';
-        echo "</tr>";
-    }
-
-    echo "</table>";
-}
-?>
-</body>
-</html>
-    -->
-
-
-
-    
-    <!-- <?php
-    session_start();
-    
-    $name = $address = $email = $section = $contact = "";
-    $nameErr = $addressErr = $emailErr = $sectionErr = $contactErr = "";
-    
-    if (!isset($_SESSION["records"])) {
-        $_SESSION["records"] = []; 
-    }
-    
-    if (isset($_POST["delete_id"])) {
-      $deleteId = $_POST["delete_id"];
-      foreach ($_SESSION["records"] as $index => $record) {
-          if ($record["id"] == $deleteId) {
-              unset($_SESSION["records"][$index]);
-              $_SESSION["records"] = array_values($_SESSION["records"]);
-              break;
-          }
-      }
-    }
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $valid = true;
-    
-        if (empty($_POST["name"])) {
-            $nameErr = "Name is required";
-            $valid = false;
-        } else {
-            $name = $_POST["name"];
-        }
-    
-        if (empty($_POST["address"])) {
-            $addressErr = "Address is required";
-            $valid = false;
-        } else {
-            $address = $_POST["address"];
-        }
-    
-        if (empty($_POST["email"])) {
-            $emailErr = "Email is required";
-            $valid = false;
-        } else {
-            $email = $_POST["email"];
-        }
-    
-        if (empty($_POST["section"])) {
-            $sectionErr = "Section is required";
-            $valid = false;
-        } else {
-            $section = $_POST["section"];
-        }
-    
-        if (empty($_POST["contact"])) {
-            $contactErr = "Contact is required";
-            $valid = false;
-        } else {
-            $contact = $_POST["contact"];
-        }
-    
-        if ($valid) {
-            $newRecord = [
-                "id" => count($_SESSION["records"]) + 1,
-                "name" => $name,
-                "address" => $address,
-                "email" => $email,
-                "section" => $section,
-                "contact" => $contact  
-            ];
-            $_SESSION["records"][] = $newRecord;
-    
-            $name = $address = $email = $section = $contact = "";
-        }
-    }
-    ?>
-    
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Document</title>
-      <style>
-        .error {
-          color: red;
-        }
-        table {
-          border-collapse: collapse;
-          width: 100%;
-          max-width: 900px;
-          margin: 20px 0;
-        }
-        table, th, td {
-          border: 1px solid #ccc;
-        }
-        th, td {
-          padding: 8px 12px;
-          text-align: left;
-        }
-        th {
-          background-color: #f4f4f4;
-        }
-      </style>
-    </head>
-    <body>
-      <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-        <label for="name">Enter your name:</label> <br>
-        <input type="text" name="name" placeholder="Enter your name" value="<?php echo htmlspecialchars($name); ?>"> <br>
-        <span class="error"><?php echo $nameErr; ?></span> <br>
-    
-        <label for="address">Enter your address:</label> <br>
-        <input type="text" name="address" placeholder="Enter your address" value="<?php echo htmlspecialchars($address); ?>"> <br>
-        <span class="error"><?php echo $addressErr; ?></span> <br>
-    
-        <label for="email">Enter your email:</label> <br>
-        <input type="text" name="email" placeholder="Enter your email" value="<?php echo htmlspecialchars($email); ?>"> <br>
-        <span class="error"><?php echo $emailErr; ?></span> <br>
-    
-        <label for="section">Enter your section:</label> <br>
-        <input type="text" name="section" placeholder="Enter your section" value="<?php echo htmlspecialchars($section); ?>"> <br>
-        <span class="error"><?php echo $sectionErr; ?></span> <br>
-    
-        <label for="contact">Enter your contact:</label> <br>
-        <input type="text" name="contact" placeholder="Enter your contact number" value="<?php echo htmlspecialchars($contact); ?>"> <br>
-        <span class="error"><?php echo $contactErr; ?></span> <br>
-    
-        <button type="submit" id="submit">Submit</button>
-        <hr>
-      </form>
-    
-    <?php
-    if (!empty($_SESSION["records"])) {
-        echo "<table>";
-        echo "<tr><th>ID</th><th>Name</th><th>Address</th><th>Email</th><th>Section</th><th>Contact</th><th>Action</th></tr>";
-    
-        foreach ($_SESSION["records"] as $record) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($record["id"]) . "</td>";
-            echo "<td>" . htmlspecialchars($record["name"]) . "</td>";
-            echo "<td>" . htmlspecialchars($record["address"]) . "</td>";
-            echo "<td>" . htmlspecialchars($record["email"]) . "</td>";
-            echo "<td>" . htmlspecialchars($record["section"]) . "</td>";
-            echo "<td>" . htmlspecialchars($record["contact"]) . "</td>";
-            echo '<td>
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="delete_id" value="' . $record["id"] . '">
-                        <button type="submit" onclick="return confirm(\'Are you sure you want to delete this record?\');">Delete</button>
-                    </form>
-                  </td>';
-            echo "</tr>";
-        }
-    
-        echo "</table>";
-    }
-    ?>
-     <?php
-    $color = "red";
-    $x = 10;
-    $y = 20;
-
-    echo "This fruit is " . $color . "<br>"; 
-    echo "This car is " . $color . "<br>"; 
-    echo "This motor is " . $color . "<br>"; 
-    echo "Answer: " . $x * $y . "<br>";
-
-    $x = 5985;
-    var_dump(is_numeric($x));
-
-    $x = "59.85" + 100;
-    var_dump(is_numeric($x));
-
-    $t = 14;
-
-    if($t < 20) {
-        echo "Have a good day!";
-    }
-
-    $favcolor = "blue";
-
-    switch($favcolor) {
-        case "red":
-            echo "Your favorite color is red!";
-            break;
-        case "blue":
-            echo "Your favorite color is blue!" . "<br>";
-            break;
-        case "green":
-            echo "Your favorite color is green!";
-            break;
-        default:
-            echo "Your favorite color is neither red, blue, nor green!";
-    }
-
-    $i = 0;
-    while($i < 5) {
-        echo "while loop iteration: $i\n" . "<br>";
-        $i++;
-    }
-
-    $j = 0;
-    do {
-        echo "do while loop iteration: $j\n" . "<br>";
-        $j++;
-    } while($j <5);
-    
-    for($k = 0; $k > 5; $k++) {
-        echo "for loop iteration: $k\n" . "<br>";
-    }
-
-    $fruits = ["apple", "banana", "cherry"];
-    foreach ($fruits as $fruit) {
-        echo "foreach loop value: $fruit\n" . "<br>";
-    }
-
-    function myMessage() {
-        echo "Hello World!" . "<br>";
-    }
-
-    myMessage();
-
-    function familyName($fname) {
-        echo "$fname Refsnes.<br>";
-    }
-
-    familyName("Rene");
-    familyName("Ronnel");
-    familyName("Aklas");
-    familyName("Panot");
-    familyName("Kolas");
-
-    define("cars", ["BMW", "McLarren", "Lamborghini"]);
-    echo "Car brand: " . cars[0] . "<br>";
-    echo "Car brand: " . cars[1] . "<br>";
-    echo "Car brand: " . cars[2] . "<br>";
-
-    $members = array("Peter"=>"35", "Ben"=>"37", "Joe"=>"43" );
-
-    foreach($members as $x => $y) {
-        echo "$x : $y <br>";
-    }
-
-     ?>
-
-     <?php 
-     echo "<hr>";
-     echo "<table border=1px>";
-     echo "<th>Name</th><th>Name</th><th>Name</th><th>Name</th>";
-     echo "<tr>";
-     echo "<td>Paul</td>";
-     echo "<td>Paul</td>";
-     echo "<td>Paul</td>";
-     echo "<td>Paul</td>";
-     echo "</tr>";
-     echo "</table>";
-     echo "</hr>";
-     ?>
-
-    <!DOCTYPE HTML>  
 <html>
 <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Finals</title>
+	<style>
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			padding: 6px;
+		}
+
+		.debug {
+			margin-top: 20px;
+			padding: 10px;
+			background-color: #f2f2f2;
+			border: 1px solid #ddd;
+		}
+	</style>
 </head>
-<body>  
-
-<?php
-// define variables and set to empty values
-$name = $email = $gender = $comment = $website = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $name = test_input($_POST["name"]);
-  $email = test_input($_POST["email"]);
-  $website = test_input($_POST["website"]);
-  $comment = test_input($_POST["comment"]);
-  $gender = test_input($_POST["gender"]);
-}
-
-function test_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}
-?>
-
-<h2>PHP Form Validation Example</h2>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
-  Name: <input type="text" name="name">
-  <br><br>
-  E-mail: <input type="text" name="email">
-  <br><br>
-  Website: <input type="text" name="website">
-  <br><br>
-  Comment: <textarea name="comment" rows="5" cols="40"></textarea>
-  <br><br>
-  Gender:
-  <input type="radio" name="gender" value="female">Female
-  <input type="radio" name="gender" value="male">Male
-  <input type="radio" name="gender" value="other">Other
-  <br><br>
-  <input type="submit" name="submit" value="Submit">  
-</form>
-
-<?php
-echo "<h2>Your Input:</h2>";
-echo $name;
-echo "<br>";
-echo $email;
-echo "<br>";
-echo $website;
-echo "<br>";
-echo $comment;
-echo "<br>";
-echo $gender;
-?>
-
-</body>
-</html>
-
-    <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Form</title>
-</head>
-<style>
-  .error {
-    color: red;
-  }
-</style>
 <body>
-  <?php 
-  // define variables and set to empty values
-$nameErr = $emailErr = $genderErr = $websiteErr = "";
-$name = $email = $gender = $comment = $website = "";
+	<h1>Simple Crud Operation</h1>
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (empty($_POST["name"])) {
-    $nameErr = "Name is required";
-  } else {
-    $name = test_input($_POST["name"]);
-    // check if name only contains letters and whitespace
-    if (!preg_match("/^[a-zA-Z-' ]*$/",$name)) {
-      $nameErr = "Only letters and white space allowed";
-    }
-  }
-  
-  if (empty($_POST["email"])) {
-    $emailErr = "Email is required";
-  } else {
-    $email = test_input($_POST["email"]);
-    // check if e-mail address is well-formed
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $emailErr = "Invalid email format";
-    }
-  }
-    
-  if (empty($_POST["website"])) {
-    $website = "";
-  } else {
-    $website = test_input($_POST["website"]);
-    // check if URL address syntax is valid (this regular expression also allows dashes in the URL)
-    if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i",$website)) {
-      $websiteErr = "Invalid URL";
-    }
-  }
+	<form method="post" action="testing.php">
+		<input type="hidden" name="action" value="add">
 
-  if (empty($_POST["comment"])) {
-    $comment = "";
-  } else {
-    $comment = test_input($_POST["comment"]);
-  }
+		<label>Name:</label> <br>
+		<input type="text" name="name" placeholder="Enter your name" required><br><br>
 
-  if (empty($_POST["gender"])) {
-    $genderErr = "Gender is required";
-  } else {
-    $gender = test_input($_POST["gender"]);
-  }
-}
+		<label>Age:</label> <br>
+		<input type="number" name="age" placeholder="Enter your age" required><br><br>
 
-function test_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}
-?>
-<h2>PHP Form Validation Example</h2>
-<p><span class="error">* required field</span></p>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
-  Name: <input type="text" name="name" value="<?php echo $name;?>">
-  <span class="error">* <?php echo $nameErr;?></span>
-  <br><br>
-  E-mail: <input type="text" name="email" value="<?php echo $email;?>">
-  <span class="error">* <?php echo $emailErr;?></span>
-  <br><br>
-  Website: <input type="text" name="website" value="<?php echo $website;?>">
-  <span class="error"><?php echo $websiteErr;?></span>
-  <br><br>
-  Comment: <textarea name="comment" rows="5" cols="40"><?php echo $comment;?></textarea>
-  <br><br>
-  Gender:
-  <input type="radio" name="gender" <?php if (isset($gender) && $gender=="female") echo "checked";?> value="female">Female
-  <input type="radio" name="gender" <?php if (isset($gender) && $gender=="male") echo "checked";?> value="male">Male
-  <input type="radio" name="gender" <?php if (isset($gender) && $gender=="other") echo "checked";?> value="other">Other  
-  <span class="error">* <?php echo $genderErr;?></span>
-  <br><br>
-  <input type="submit" name="submit" value="Submit">  
-</form>
+		<input type="submit" value="Add Person">	  		  	
+	</form>
 
-<?php
-echo "<h2>Your Input:</h2>";
-echo $name;
-echo "<br>";
-echo $email;
-echo "<br>";
-echo $website;
-echo "<br>";
-echo $comment;
-echo "<br>";
-echo $gender;
-?>
+	<h2>List of People</h2>
 
+	<?php if (!empty($_SESSION['people'])): ?>
+		<table>
+			<thead>
+				<tr>
+					<th>Number</th>
+					<th>Name</th>
+					<th>Age</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ($_SESSION['people'] as $index => $person): ?>
+					<tr>
+					   <form method="get" action="testing.php">
+					   	   <td><?php echo $index + 1; ?></td>
+
+					   	   <td>
+					   	   	  <input type="text" name="name" value="<?php echo htmlspecialchars($person->getName())?>" required>	
+					   	   </td>	
+
+					   	   <td>
+					   	   	  <input type="number" name="age" value="<?php echo htmlspecialchars($person->getAge())?>" required>	
+					   	   </td>
+
+					   	   <td>
+					   	   	  <input type="hidden" name="index" value="<?php echo $index; ?>">
+					   	   	  <button type="submit" name="action" value="edit">Save</button>
+
+					   	   	  <button type="submit" name="action" value="delete" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
+					   	   </td>
+					   	</form>
+					 </tr>
+				  <?php endforeach; ?>	
+			</tbody>
+		</table> <br>
+
+		<form method="get" action="testing.php" onsubmit="return confirm('Are you sure you want to clear all people?');">
+			<input type="hidden" name="action" value="clear">
+			<button type="submit">Clear All</button>
+		</form>
+
+	<?php else: ?>
+		<p>No people added yet.</p>
+	<?php endif; ?>
+
+	<div class="debug">
+		<h3>Debug: Current List of People in Session</h3>
+			<?php
+				if (count($_SESSION['people']) > 0) {
+					echo "Current people in session: <br>";
+					foreach ($_SESSION['people'] as $index => $person) {
+						echo "Person $index: " . $person->displayInfo();
+					}
+				} else {
+					echo "No record to show.";
+				}
+			?>
+	</div>
+
+	<?php if (isset($_SESSION['update_success'])): ?>
+		<script type="text/javascript">
+			alert("<?php echo $_SESSION['update_success']; ?>");
+		</script>
+		<?php unset($_SESSION['update_success']);?>
+	<?php endif; ?>
 </body>
-</html>
-    </body>
-    </html>          -->
+</html> -->
   </body>
 </html>
