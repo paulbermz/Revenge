@@ -12,7 +12,186 @@
   <body>
 
     
-<!--     <?php 
+<!--     
+	<?php
+	session_start();
+
+	class Book {
+		private $title;
+		private $author;
+		private $genre;
+
+		public function __construct($title, $author, $genre) {
+			$this->title = $title;
+			$this->author = $author;
+			$this->genre = $genre;
+		}
+
+		public function getTitle() {
+			return $this->title;
+		}
+
+		public function getAuthor() {
+			return $this->author;
+		}
+
+		public function getGenre() {
+			return $this->genre;
+		}
+
+		public function setTitle($title) {
+			$this->title = $title;
+		}
+
+		public function setAuthor($author) {
+			$this->author = $author;
+		}
+
+		public function setGenre($genre) {
+			$this->genre = $genre;
+		}
+	}
+
+	class Borrower {
+		private $name;
+
+		public function __construct($name) {
+			$this->name = $name;
+		}
+
+		public function getName() {
+			return $this->name;
+		}
+	}
+
+	if (!isset($_SESSION['library'])) {
+		$_SESSION['library'] = [];
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['add']) {
+		$title = $_POST['title'];
+		$author = $_POST['author'];
+		$genre = $_POST['genre'];
+		$name = $_POST['borrower'];
+
+		if (!empty($title) && !empty($author) && !empty($name)  && !empty($genre)) {
+			$book = new Book($title, $author, $genre);
+			$borrower = new Borrower($name);
+			$_SESSION['library'][] = ['book' => $book, 'borrower' => $borrower];
+		}
+		header("Location: index.php");
+		exit();
+	}
+	
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['reset']) {
+		$_SESSION['library'] = [];
+		header("Location: index.php");
+		exit();
+	}
+
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['delete']) {
+		$index = $_POST['index'];
+		if (isset($_SESSION['library'][$index])) {
+			array_splice($_SESSION['library'], $index, 1);
+			header("Location: index.php");
+			exit();
+		}
+	}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Document</title>
+	<style>
+		table, tr, th, td {
+			border-collapse: collapse;
+			border: 1px solid black;
+			padding: 10px;
+		}
+	</style>
+</head>
+<body>
+	<h2>Library Management System</h2>
+	<form method="POST" action="index.php">
+		<label>Book Title:</label>
+		<input type="text" name="title" placeholder="Enter book title..." required><br><br>
+		<label>Book Author:</label>
+		<input type="text" name="author" placeholder="Enter book author..." required><br><br>
+		<label>Book Genre:</label>
+		<input type="text" name="genre" placeholder="Enter book genre..." required><br><br>
+		<label>Borrower Name:</label>
+		<input type="text" name="borrower" placeholder="Enter borrower name..." required><br><br>
+		<input type="submit" name="add" value="Add Book">
+	</form> 
+
+	<h2>Record List</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>BOOK TITLE</th>
+				<th>BOOK AUTHOR</th>
+				<th>BOOK GENRE</th>
+				<th>BORROWER</th>
+				<th>ACTIONS</th>
+			</tr>
+		</thead>
+		<tbody>
+				<?php foreach ($_SESSION['library'] as $index => $records):?>
+					<tr>
+						<form method="POST">
+							<td><?php echo $index + 1; ?></td>
+
+							<td>
+								<input type="text" name="title" value="<?php echo htmlspecialchars($records['book']->getTitle())?>" required>
+							</td>
+
+							<td>
+								<input type="text" name="author" value="<?php echo htmlspecialchars($records['book']->getAuthor())?>" required>
+							</td>
+
+							<td>
+								<input type="text" name="genre" value="<?php echo htmlspecialchars($records['book']->getGenre())?>" required>
+							</td>
+
+							<td>
+								<input type="text" name="borrower" value="<?php echo htmlspecialchars($records['borrower']->getName())?>" required>
+							</td>
+
+							<td>
+								<input type="hidden" name="index" value="<?php echo $index ?>">
+								<input type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete this record?')">
+							</td>
+						</form>
+					</tr>
+				<?php endforeach; ?>
+		</tbody>
+	</table><br>
+	<form method="POST">
+		<input type="submit" name="reset" value="Reset Records" onclick="return confirm('Are you sure you want to reset all records?')">
+	</form>
+</body>
+</html>  
+	  
+	  
+	  
+	  
+	
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  <?php 
 	session_start();
 
 	class Person {
