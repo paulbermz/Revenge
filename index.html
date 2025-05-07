@@ -83,7 +83,7 @@
 			$borrower = new Borrower($name);
 			$_SESSION['library'][] = ['book' => $book, 'borrower' => $borrower];
 		}
-		header("Location: handson.php");
+		header("Location: index.php");
 		exit();
 	}
 
@@ -94,7 +94,7 @@
 		$_SESSION['library'][$index]['book']->setGenre($_POST['genre']);
 		$_SESSION['library'][$index]['borrower']->setName($_POST['borrower']);
 
-		header("Location: handson.php");
+		header("Location: index.php");
 		exit();
 	}
 
@@ -102,7 +102,7 @@
 		$index = $_POST['index'];
 		if (isset($_SESSION['library'][$index])) {
 			array_splice($_SESSION['library'], $index, 1);
-			header("Location: handson.php");
+			header("Location: index.php");
 			exit();
 		}
 	}
@@ -110,7 +110,7 @@
 
 	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['reset']) {
 		$_SESSION['library'] = [];
-		header("Location: handson.php");
+		header("Location: index.php");
 		exit();
 	}
 ?>
@@ -131,7 +131,7 @@
 </head>
 <body>
 	<h2>Library Management System</h2>
-	<form method="POST" action="handson.php">
+	<form method="POST" action="index.php">
 		<label>Book Title:</label>
 		<input type="text" name="title" placeholder="Enter book title..." required><br><br>
 		<label>Book Author:</label>
@@ -202,213 +202,6 @@
 	  
 	  
 	  
-	  
-	  
-	  
-	  
-	  <?php 
-	session_start();
-
-	class Person {
-		private $name;
-		private $age;
-
-		public function __construct($name, $age) {
-			$this->name = $name;
-			$this->age = $age;
-		}
-
-		public function getName() {
-			return $this->name;
-		}
-
-		public function setName($name) {
-			$this->name = $name;
-		}
-
-		public function getAge() {
-			return $this->age;
-		}
-
-		public function setAge($age) {
-			$this->age = $age;
-		}
-
-		public function displayInfo() {
-			return $this->getName() . ", Age: " . $this->getAge() . "<br>";
-		}
-	} 
-
-	if (!isset($_SESSION['people'])) {
-		$_SESSION['people'] = [];
-	}
-
-	if ($_SERVER['REQUEST_METHOD'] == "POST") {
-		if(isset($_POST['action']) && $_POST['action'] == 'add') {
-			$name = $_POST['name'];
-			$age = $_POST['age'];
-
-			if (!empty($name) && !empty($age) && $age > 0) {
-				$newPerson = new Person($name, $age);
-				$_SESSION['people'][] = $newPerson;
-			}
-
-			header("Location: testing.php");
-			exit();
-		}
-	}
-
-	if (isset($_GET['action'])) {
-		$action = $_GET['action'];
-
-		if ($action == 'edit' && isset($_GET['index']) && isset($_GET['name']) && isset($_GET['age'])) {
-			$index = $_GET['index'];
-			$name = $_GET['name'];
-			$age = $_GET['age'];		
-
-		if (isset($_SESSION['people'][$index])) {
-			$_SESSION['people'][$index]->setName($name);
-			$_SESSION['people'][$index]->setAge($age);
-			$_SESSION['update_success'] = "Record updated successfully!";
-		}
-
-		header("Location: testing.php");
-		exit();
-	}
-
-	if ($action == 'delete' && isset($_GET['index'])) {
-		$index = $_GET['index'];
-
-		if (isset($_SESSION['people'][$index])) {
-			array_splice($_SESSION['people'], $index, 1);
-		}
-	}
-
-		if ($action == 'clear') {
-			unset($_SESSION['people']);
-			header("Location: testing.php");
-			exit();
-		}
-	}
-?>
-
-
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Finals</title>
-	<style>
-		table, th, td {
-			border: 1px solid black;
-			border-collapse: collapse;
-			padding: 6px;
-		}
-
-		.debug {
-			margin-top: 20px;
-			padding: 10px;
-			background-color: #f2f2f2;
-			border: 1px solid #ddd;
-		}
-	</style>
-</head>
-<body>
-	<h1>Simple Crud Operation</h1>
-
-	<form method="post" action="testing.php">
-		<input type="hidden" name="action" value="add">
-
-		<label>Name:</label> <br>
-		<input type="text" name="name" placeholder="Enter your name" required><br><br>
-
-		<label>Age:</label> <br>
-		<input type="number" name="age" placeholder="Enter your age" required><br><br>
-
-		<input type="submit" value="Add Person">	  		  	
-	</form>
-
-	<h2>List of People</h2>
-
-	<?php if (!empty($_SESSION['people'])): ?>
-		<table>
-			<thead>
-				<tr>
-					<th>Number</th>
-					<th>Name</th>
-					<th>Age</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ($_SESSION['people'] as $index => $person): ?>
-					<tr>
-					   <form method="get" action="testing.php">
-					   	   <td><?php echo $index + 1; ?></td>
-
-					   	   <td>
-					   	   	  <input type="text" name="name" value="<?php echo htmlspecialchars($person->getName())?>" required>	
-					   	   </td>	
-
-					   	   <td>
-					   	   	  <input type="number" name="age" value="<?php echo htmlspecialchars($person->getAge())?>" required>	
-					   	   </td>
-
-					   	   <td>
-					   	   	  <input type="hidden" name="index" value="<?php echo $index; ?>">
-					   	   	  <button type="submit" name="action" value="edit">Save</button>
-
-					   	   	  <button type="submit" name="action" value="delete" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
-					   	   </td>
-					   	</form>
-					 </tr>
-				  <?php endforeach; ?>	
-			</tbody>
-		</table> <br>
-
-		<form method="get" action="testing.php" onsubmit="return confirm('Are you sure you want to clear all people?');">
-			<input type="hidden" name="action" value="clear">
-			<button type="submit">Clear All</button>
-		</form>
-
-	<?php else: ?>
-		<p>No people added yet.</p>
-	<?php endif; ?>
-
-	<div class="debug">
-		<h3>Debug: Current List of People in Session</h3>
-			<?php
-				if (count($_SESSION['people']) > 0) {
-					echo "Current people in session: <br>";
-					foreach ($_SESSION['people'] as $index => $person) {
-						echo "Person $index: " . $person->displayInfo();
-					}
-				} else {
-					echo "No record to show.";
-				}
-			?>
-	</div>
-
-	<?php if (isset($_SESSION['update_success'])): ?>
-		<script type="text/javascript">
-			alert("<?php echo $_SESSION['update_success']; ?>");
-		</script>
-		<?php unset($_SESSION['update_success']);?>
-	<?php endif; ?>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-	  
-
 <?php
 session_start();
 
