@@ -105,7 +105,6 @@
         $_SESSION['library'][$index]['book']->setAuthor($_POST['author']);
         $_SESSION['library'][$index]['book']->setGenre($_POST['genre']);
         $_SESSION['library'][$index]['borrower']->setName($_POST['borrower']);
-	$_SESSION['library'][$index]['borrower']->setDate($_POST['date']);
 
         header("Location: index.php");
         exit();
