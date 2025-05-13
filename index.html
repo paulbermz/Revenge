@@ -101,6 +101,131 @@ public class VendingMachineSystem {
                           item.getQuantity() + "\t" +
                           "₱" + String.format("%.2f", item.getTotalPrice());
 
+            import java.util.ArrayList;
+import java.util.Scanner;
+
+public class VendingMachineSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<VendingItem> items = new ArrayList<>();
+
+        int choice;
+
+        do {
+            System.out.println("\n=== VENDING MACHINE MENU ===");
+            System.out.println("1. Add Item");
+            System.out.println("2. Edit Item");
+            System.out.println("3. Calculate Total");
+            System.out.println("4. Display All Items");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter item type (Snack/Drink): ");
+                    String type = scanner.nextLine();
+                    System.out.print("Enter item name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter item price: ");
+                    double price = scanner.nextDouble();
+                    System.out.print("Enter quantity: ");
+                    int quantity = scanner.nextInt();
+
+                    if (type.equalsIgnoreCase("Snack")) {
+                        items.add(new Snack(name, price, quantity));
+                    } else if (type.equalsIgnoreCase("Drink")) {
+                        items.add(new Drink(name, price, quantity));
+                    } else {
+                        System.out.println("Invalid type. Item not added.");
+                    }
+                    break;
+
+                case 2:
+                    if (items.isEmpty()) {
+                        System.out.println("No items to edit.");
+                        break;
+                    }
+                    System.out.print("Enter item index to edit: ");
+                    int index = scanner.nextInt();
+                    scanner.nextLine(); // consume newline
+                    if (index >= 0 && index < items.size()) {
+                        VendingItem item = items.get(index);
+                        System.out.print("Enter new name: ");
+                        item.setName(scanner.nextLine());
+                        System.out.print("Enter new price: ");
+                        item.setPrice(scanner.nextDouble());
+                        System.out.print("Enter new quantity: ");
+                        item.setQuantity(scanner.nextInt());
+                        System.out.println("Item updated successfully.");
+                    } else {
+                        System.out.println("Invalid index.");
+                    }
+                    break;
+
+                case 3:
+                    double total = 0;
+                    for (VendingItem item : items) {
+                        total += item.getTotalPrice();
+                    }
+                    System.out.printf("Total Price of All Items: ₱%.2f\n", total);
+                    break;
+
+                case 4:
+                    if (items.isEmpty()) {
+                        System.out.println("No items in the vending machine.");
+                    } else {
+                        System.out.println("\n--- All Vending Items ---");
+                        System.out.printf("%-5s %-10s %-10s %-10s %-10s %-10s\n", "Index", "Type", "Name", "Price", "Qty", "Total");
+
+                        for (int i = 0; i < items.size(); i++) {
+                            VendingItem item = items.get(i);
+                            String itemType = (item instanceof Snack) ? "Snack" : "Drink";
+                            System.out.printf("%-5d %-10s %-10s ₱%-9.2f %-10d ₱%-9.2f\n",
+                                    i, itemType, item.getName(), item.getPrice(), item.getQuantity(), item.getTotalPrice());
+                        }
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Exiting Vending Machine... Goodbye!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        } while (choice != 5);
+
+        scanner.close();
+    }
+}
+
+public abstract class VendingItem {
+    protected String name;
+    protected double price;
+    protected int quantity;
+
+    public VendingItem(String name, double price, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public abstract double getTotalPrice();
+
+    // Getters and Setters
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+    public int getQuantity() { return quantity; }
+
+    public void setName(String name) { this.name = name; }
+    public void setPrice(double price) { this.price = price; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+}
+
+public class Snack extends VendingItem {
+    public Sn
             System.out.println(line);
         }
     }
