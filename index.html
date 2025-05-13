@@ -1,414 +1,115 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      href="https://www.apachefriends.org/images/xampp-logo-ac950edf.svg"
-    />
-    <title>Document</title>
-  </head>
-  <body>
+import java.util.ArrayList;
+import java.util.Scanner;
 
-    
-<!--     
-<?php
-require_once 'Donor.php';
-require_once 'Donation.php';
-session_start();
+public class VendingMachineSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<VendingItem> items = new ArrayList<>();
 
-if (!isset($_SESSION['donors'])) {
-    $_SESSION['donors'] = [];
-}
-if (!isset($_SESSION['donations'])) {
-    $_SESSION['donations'] = [];
-}
+        int choice;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['clear_data'])) {
-        session_destroy();
-        header("Location: index.php");
-        exit();
-    }
-    
-    if (isset($_POST['register_donor'])) {
-        $firstName = trim($_POST['first_name']);
-        $lastName  = trim($_POST['last_name']);
-        if (!empty($firstName) && !empty($lastName)) {
-            $donorId = count($_SESSION['donors']) + 1;
-            $_SESSION['donors'][$donorId] = new Donor($donorId, $firstName, $lastName);
-        }
-        header("Location: index.php");
-        exit();
-    }
-    
-    if (isset($_POST['submit_donation'])) {
-        $donorId = $_POST['donor_id'];
-        $amount  = floatval($_POST['amount']);
-        if (!empty($donorId) && $amount > 0) {
-            $donationId = count($_SESSION['donations']) + 1;
-            $_SESSION['donations'][] = new Donation($donationId, $donorId, $amount);
-        }
-        header("Location: index.php");
-        exit();
-    }
-}
-?>
+        do {
+            System.out.println("\n=== VENDING MACHINE MENU ===");
+            System.out.println("1. Add Item");
+            System.out.println("2. Edit Item");
+            System.out.println("3. Calculate Total");
+            System.out.println("4. Display All Items");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-    <style>
-        table, th, td {
-            width: 900px;
-            border: 1px solid #000;
-            border-collapse: collapse;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: lightgrey;
-        }
-        form { 
-            margin-bottom: 20px; }
-        h2 { 
-            margin-bottom: 5px; }
-    </style>
-</head>
-<body>
-    <h1>Donation Tracking System</h1>
-    <h2>Donor Registration</h2><br>
-    <form method="POST" action="index.php">
-        <label for="first_name">First Name:</label>
-        <input type="text" name="first_name" id="first_name" placeholder="Enter first name" required><br><br>
-        <label for="last_name">Last Name:</label>
-        <input type="text" name="last_name" id="last_name" placeholder="Enter last name" required><br><br>
-        <input type="submit" name="register_donor" value="Register Donor" onclick="return alert('Donor registered successfully. Please proceed to select donor dropdown.')">
-    </form>
-    
-    <h2>Donation Entry</h2><br>
-    <form method="POST" action="index.php">
-        <label for="donor_id">Select Donor:</label>
-        <select name="donor_id" id="donor_id" required>
-            <option value="">-- Select Donor --</option>
-            <?php foreach($_SESSION['donors'] as $donor): ?>
-                <option value="<?php echo $donor->getDonorId(); ?>">
-                    <?php echo $donor->getFullName(); ?>
-                </option>
-            <?php endforeach; ?>
-        </select><br><br>
-        <label for="amount">Donation Amount:</label>
-        <input type="number" name="amount" placeholder="Enter donation amount" required><br><br>
-        <input type="submit" name="submit_donation" value="Submit Donation" onclick="return alert('Donation submitted successfully!')">
-    </form>
-    
-    <h2>Donation Records</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Donor ID</th>
-                <th>Donor Name</th>
-                <th>Donation ID</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            $grandTotal = 0;
-            foreach ($_SESSION['donors'] as $donorId => $donor):
-                $donationsForDonor = array_filter($_SESSION['donations'], function($donation) use ($donorId) {
-                    return $donation->getDonorId() == $donorId;
-                });
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter item type (Snack/Drink): ");
+                    String type = scanner.nextLine();
+                    System.out.print("Enter item name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter item price: ");
+                    double price = scanner.nextDouble();
+                    System.out.print("Enter quantity: ");
+                    int quantity = scanner.nextInt();
+
+                    if (type.equalsIgnoreCase("Snack")) {
+                        items.add(new Snack(name, price, quantity));
+                    } else if (type.equalsIgnoreCase("Drink")) {
+                        items.add(new Drink(name, price, quantity));
+                    } else {
+                        System.out.println("Invalid type. Item not added.");
+                    }
+                    break;
+
+                case 2:
+                    if (items.isEmpty()) {
+                        System.out.println("No items to edit.");
+                        break;
+                    }
+                    System.out.print("Enter item index to edit: ");
+                    int index = scanner.nextInt();
+                    scanner.nextLine(); // consume newline
+                    if (index >= 0 && index < items.size()) {
+                        VendingItem item = items.get(index);
+                        System.out.print("Enter new name: ");
+                        item.setName(scanner.nextLine());
+                        System.out.print("Enter new price: ");
+                        item.setPrice(scanner.nextDouble());
+                        System.out.print("Enter new quantity: ");
+                        item.setQuantity(scanner.nextInt());
+                        System.out.println("Item updated successfully.");
+                    } else {
+                        System.out.println("Invalid index.");
+                    }
+                    break;
+
+                case 3:
+                    double total = 0;
+                    for (VendingItem item : items) {
+                        total += item.getTotalPrice();
+                    }
+                    System.out.printf("Total Price of All Items: ₱%.2f\n", total);
+                    break;
+
                 
-                if (count($donationsForDonor) > 0) {
-                    $rowspan = count($donationsForDonor);
-                    $firstRow = true;
-                    foreach ($donationsForDonor as $donation):
-                        if ($firstRow): ?>
-                            <tr>
-                                <td rowspan="<?php echo $rowspan; ?>"><?php echo $donor->getDonorId(); ?></td>
-                                <td rowspan="<?php echo $rowspan; ?>"><?php echo $donor->getFullName(); ?></td>
-                                <td><?php echo $donation->getDonationId(); ?></td>
-                                <td><?php echo number_format($donation->getAmount(), 2); ?></td>
-                            </tr>
-                        <?php 
-                            $firstRow = false;
-                        else: ?>
-                            <tr>
-                                <td><?php echo $donation->getDonationId(); ?></td>
-                                <td><?php echo number_format($donation->getAmount(), 2); ?></td>
-                            </tr>
-                        <?php 
-                        endif;
-                        $grandTotal += $donation->getAmount();
-                    endforeach;
-                }
-            endforeach;
-            ?>
-            <tr>
-                <th></th>
-                <th><strong>Grand Total</strong></th>
-                <th></th>
-                <th><strong><?php echo number_format($grandTotal, 2); ?></strong></th>
-            </tr>
-        </tbody>
-    </table>
-    
-    <form method="POST" action="index.php">
-        <br>
-        <button type="submit" name="clear_data" onclick="return confirm('Are you sure you want to clear all data?')">Clear All Data</button>
-    </form>
-</body>
-</html>
+                    if (items.isEmpty()) {
+                        System.out.println("No items in the vending machine.");
+                    } else {
+                        System.out.println("\n--- All Vending Items ---");
+                        System.out.printf("%-5s %-10s %-10s %-10s %-10s %-10s\n", "Index", "Type", "Name", "Price", "Qty", "Total");
 
-	  
+                        for (int i = 0; i < items.size(); i++) {
+                            VendingItem item = items.get(i);
+                            String itemType = (item instanceof Snack) ? "Snack" : "Drink";
+                            System.out.printf("%-5d %-10s %-10s ₱%-9.2f %-10d ₱%-9.2f\n",
+                                    i, itemType, item.getName(), item.getPrice(), item.getQuantity(), item.getTotalPrice());
+                        }
+                    }
+                    break;case 4:
+    if (items.isEmpty()) {
+        System.out.println("No items in the vending machine.");
+    } else {
+        System.out.println("\n--- All Vending Items ---");
+        System.out.println("Index\tType\t\tName\t\tPrice\t\tQty\tTotal");
 
-	  <?php
-class Donation {
-    private $donationId;
-    private $donorId;
-    private $amount;
+        for (int i = 0; i < items.size(); i++) {
+            VendingItem item = items.get(i);
+            String itemType = (item instanceof Snack) ? "Snack" : "Drink";
 
-    public function __construct($donationId, $donorId, $amount) {
-        $this->donationId = $donationId;
-        $this->donorId = $donorId;
-        $this->amount = $amount;
+            String line = i + "\t" +
+                          itemType + "\t\t" +
+                          item.getName() + "\t\t" +
+                          "₱" + String.format("%.2f", item.getPrice()) + "\t\t" +
+                          item.getQuantity() + "\t" +
+                          "₱" + String.format("%.2f", item.getTotalPrice());
+
+            System.out.println(line);
+        }
     }
+    break;
 
-    public function getDonationId() {
-        return $this->donationId;
-    }
+                case 5:
+                    System.out.println("Exiting Vending Machine... Goodbye!");
+                    break;
 
-    public function getDonorId() {
-        return $this->donorId;
-    }
-
-    public function getAmount() {
-        return $this->amount;
-    }
-
-    public function getDonationInfo() {
-        return "Donation ID: " . $this->donationId . " | Amount: $" . number_format($this->amount, 2);
-    }
-}
-?>
-
-
-	<?php
-class Donor {
-    private $donorId;
-    private $firstName;
-    private $lastName;
-
-    public function __construct($donorId, $firstName, $lastName) {
-        $this->donorId = $donorId;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-    }
-
-    public function getDonorId() {
-        return $this->donorId;
-    }
-
-    public function getFullName() {
-        return $this->firstName . ' ' . $this->lastName;
-    }
-}
-?>
-
-
-
-
-
-
-	  <?php
-	session_start();
-
-	class Book {
-		private $title;
-		private $author;
-		private $genre;
-
-		public function __construct($title, $author, $genre) {
-			$this->title = $title;
-			$this->author = $author;
-			$this->genre = $genre;
-		}
-
-		public function getTitle() {
-			return $this->title;
-		}
-
-		public function getAuthor() {
-			return $this->author;
-		}
-
-		public function getGenre() {
-			return $this->genre;
-		}
-
-		public function setTitle($title) {
-			$this->title = $title;
-		}
-
-		public function setAuthor($author) {
-			$this->author = $author;
-		}
-
-		public function setGenre($genre) {
-			$this->genre = $genre;
-		}
-	}
-
-	class Borrower {
-		private $name;
-
-		public function __construct($name) {
-			$this->name = $name;
-		}
-
-		public function getName() {
-			return $this->name;
-		}
-
-		public function setName($name) {
-			$this->name = $name;
-		}
-	}
-
-	if (!isset($_SESSION['library'])) {
-		$_SESSION['library'] = [];
-	}
-
-	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['add']) {
-		$title = $_POST['title'];
-		$author = $_POST['author'];
-		$genre = $_POST['genre'];
-		$name = $_POST['borrower'];
-
-		if (!empty($title) && !empty($author) && !empty($name)  && !empty($genre)) {
-			$book = new Book($title, $author, $genre);
-			$borrower = new Borrower($name);
-			$_SESSION['library'][] = ['book' => $book, 'borrower' => $borrower];
-		}
-		header("Location: index.php");
-		exit();
-	}
-
-	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-		$index = $_POST['index'];
-		$_SESSION['library'][$index]['book']->setTitle($_POST['title']);
-		$_SESSION['library'][$index]['book']->setAuthor($_POST['author']);
-		$_SESSION['library'][$index]['book']->setGenre($_POST['genre']);
-		$_SESSION['library'][$index]['borrower']->setName($_POST['borrower']);
-
-		header("Location: index.php");
-		exit();
-	}
-
-	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['delete']) {
-		$index = $_POST['index'];
-		if (isset($_SESSION['library'][$index])) {
-			array_splice($_SESSION['library'], $index, 1);
-			header("Location: index.php");
-			exit();
-		}
-	}
-	
-
-	if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['reset']) {
-		$_SESSION['library'] = [];
-		header("Location: index.php");
-		exit();
-	}
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Document</title>
-	<style>
-		table, tr, th, td {
-			border-collapse: collapse;
-			border: 1px solid black;
-			padding: 10px;
-		}
-	</style>
-</head>
-<body>
-	<h2>Library Management System</h2>
-	<form method="POST" action="index.php">
-		<label>Book Title:</label>
-		<input type="text" name="title" placeholder="Enter book title..." required><br><br>
-		<label>Book Author:</label>
-		<input type="text" name="author" placeholder="Enter book author..." required><br><br>
-		<label>Book Genre:</label>
-		<select name="genre" required>
-			<option value="">Select genre</option>
-			<option value="Programming">Programming</option>
-			<option value="Horror">Horror</option>
-			<option value="Romantic">Romantic</option>
-			<option value="Comedy">Comedy</option>
-		</select><br><br>
-		<label>Borrower Name:</label>
-		<input type="text" name="borrower" placeholder="Enter borrower name..." required><br><br>
-		<input type="submit" name="add" value="Add Book">
-	</form> 
-
-	<h2>Record List</h2>
-	<table>
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>BOOK TITLE</th>
-				<th>BOOK AUTHOR</th>
-				<th>BOOK GENRE</th>
-				<th>BORROWER</th>
-				<th>ACTIONS</th>
-			</tr>
-		</thead>
-		<tbody>
-				<?php foreach ($_SESSION['library'] as $index => $records):?>
-					<tr>
-						<form method="POST">
-							<td><?php echo $index + 1; ?></td>
-
-							<td>
-								<input type="text" name="title" value="<?php echo htmlspecialchars($records['book']->getTitle())?>" required>
-							</td>
-
-							<td>
-								<input type="text" name="author" value="<?php echo htmlspecialchars($records['book']->getAuthor())?>" required>
-							</td>
-
-							<td>
-								<input type="text" name="genre" value="<?php echo htmlspecialchars($records['book']->getGenre())?>" required>
-							</td>
-
-							<td>
-								<input type="text" name="borrower" value="<?php echo htmlspecialchars($records['borrower']->getName())?>" required>
-							</td>
-
-							<td>
-								<input type="hidden" name="index" value="<?php echo $index ?>">
-								<input type="submit" name="update" value="Update" onclick="return alert('Record updated successfully!')">
-								<input type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete this record?')">
-							</td>
-						</form>
-					</tr>
-				<?php endforeach; ?>
-		</tbody>
-	</table><br>
-	<form method="POST">
-		<input type="submit" name="reset" value="Reset Records" onclick="return confirm('Are you sure you want to reset all records?')">
-	</form>
-</body>
-</html>   
-	  -->
-  </body>
-</html>
+                default:
+                    System.out.println("Invalid choice. Try again.");
+     
